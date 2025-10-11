@@ -45,11 +45,14 @@ if DATABASE_URL:
                 parsed.scheme,
                 parsed.netloc,
                 parsed.path,
-                parsed.params,
+                # parsed.params,
+                "",
                 query_string,
-                parsed.fragment,
+                # parsed.fragment,
+                "",
             )
         )
+        print("✅ Cleaned DATABASE_URL:", DATABASE_URL)
 
     app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 else:
