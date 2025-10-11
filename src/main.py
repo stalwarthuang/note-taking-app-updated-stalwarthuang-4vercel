@@ -19,13 +19,24 @@ CORS(app)
 # register blueprints
 app.register_blueprint(user_bp, url_prefix="/api")
 app.register_blueprint(note_bp, url_prefix="/api")
-# configure database to use repository-root `database/app.db`
-ROOT_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-DB_PATH = os.path.join(ROOT_DIR, "database", "app.db")
-# ensure database directory exists
-os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_PATH}"
+# Database configuration - support both PostgreSQL (production) and SQLite (development)
+DATABASE_URL = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
+
+if DATABASE_URL:
+    # Using PostgreSQL (for Vercel deployment)
+    # Vercel Postgres URLs might use 'postgres://' but SQLAlchemy requires 'postgresql://'
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+else:
+    # Fallback to SQLite for local development
+    ROOT_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+    DB_PATH = os.path.join(ROOT_DIR, "database", "app.db")
+    # ensure database directory exists
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_PATH}"
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
 with app.app_context():
