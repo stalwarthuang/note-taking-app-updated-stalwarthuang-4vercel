@@ -38,7 +38,8 @@ Vercel 提供的 URL 可能是 `postgres://` 开头，代码会自动转换为 S
 1. **requirements.txt**: 添加了 `psycopg2-binary` PostgreSQL 驱动
 2. **src/main.py**: 更新了数据库配置逻辑
    - 优先使用环境变量中的 PostgreSQL URL
-   - 自动处理 URL 格式转换
+   - 自动处理 URL 格式转换（postgres:// → postgresql://）
+   - 清理 URL 中 psycopg2 不支持的参数（如 Vercel 特有的参数）
    - 本地开发自动降级到 SQLite
 
 ### 部署后初始化

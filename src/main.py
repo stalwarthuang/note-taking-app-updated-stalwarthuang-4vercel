@@ -1,5 +1,6 @@
 import os
 import sys
+from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
 # DON'T CHANGE THIS !!!
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -28,6 +29,28 @@ if DATABASE_URL:
     # Vercel Postgres URLs might use 'postgres://' but SQLAlchemy requires 'postgresql://'
     if DATABASE_URL.startswith("postgres://"):
         DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+    # Clean up URL parameters that psycopg2 doesn't support
+    parsed = urlparse(DATABASE_URL)
+    if parsed.query:
+        # Parse query parameters
+        params = parse_qs(parsed.query)
+        # Keep only standard PostgreSQL parameters
+        allowed_params = {"sslmode", "connect_timeout", "application_name", "options"}
+        cleaned_params = {k: v for k, v in params.items() if k in allowed_params}
+        # Reconstruct URL with cleaned parameters
+        query_string = urlencode(cleaned_params, doseq=True) if cleaned_params else ""
+        DATABASE_URL = urlunparse(
+            (
+                parsed.scheme,
+                parsed.netloc,
+                parsed.path,
+                parsed.params,
+                query_string,
+                parsed.fragment,
+            )
+        )
+
     app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 else:
     # Fallback to SQLite for local development
