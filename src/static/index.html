@@ -2,441 +2,1059 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NoteTaker - Your Personal Note Manager</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoteTaker - Your Personal Note Manager</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <!-- Marked.js for Markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #0052D9 100%);
+      min-height: 100vh;
+      color: #333;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            color: white;
-        }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      font-family: 'MentiText';
+      color: white;
+    }
 
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
 
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
 
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 30px;
-            flex: 1;
-        }
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 30px;
+      flex: 1;
+    }
 
-        .sidebar {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            height: fit-content;
-        }
+    .sidebar {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      height: fit-content;
+    }
 
-        .note-editor {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-        }
+    .page-bottom {
+      align-items: center;
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: #929090;
+      opacity: 0.8;
+    }
 
-        .search-box {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 14px;
-            margin-bottom: 20px;
-            transition: border-color 0.3s ease;
-        }
+    .note-editor {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+    }
 
-        .search-box:focus {
-            outline: none;
-            border-color: #667eea;
-        }
+    .search-box {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      transition: border-color 0.3s ease;
+    }
 
-        .new-note-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 20px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
+    .search-box:focus {
+      outline: none;
+      border-color: #667eea;
+    }
 
-        .new-note-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
+    .new-note-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #3860b1 0%, #0052D9 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-        .notes-list {
-            max-height: 500px;
-            overflow-y: auto;
-        }
+    .new-note-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
 
-        .note-item {
-            padding: 15px;
-            border: 2px solid transparent;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-        }
+    .notes-list {
+      max-height: 800px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
 
-        .note-item:hover {
-            border-color: #667eea;
-            transform: translateX(5px);
-        }
+    .note-item {
+      padding: 15px;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+      transform: scale(0.99);
+    }
 
-        .note-item.active {
-            border-color: #667eea;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-        }
+    .note-item:hover {
+      border-color: #0052D9;
+      transform: scale(1.002);
+    }
 
-        .note-title {
-            font-weight: 600;
-            font-size: 16px;
-            margin-bottom: 5px;
-            color: #333;
-        }
+    .note-item.active {
+      border-color: #667eea;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    }
 
-        .note-preview {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
+    .note-title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 5px;
+      color: #333;
+    }
 
-        .note-date {
-            font-size: 12px;
-            color: #999;
-            margin-top: 5px;
-        }
+    .note-preview {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
 
-        .editor-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+    .note-date {
+      font-size: 12px;
+      color: #999;
+      margin-top: 5px;
+    }
 
-        .editor-title {
-            font-size: 1.5rem;
-            color: #333;
-        }
+    .editor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
 
-        .editor-actions {
-            display: flex;
-            gap: 10px;
-        }
+    .editor-title {
+      font-size: 1.5rem;
+      color: #333;
+    }
 
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
+    .editor-actions {
+      display: flex;
+      gap: 10px;
+    }
 
-        .btn-save {
-            background: #28a745;
-            color: white;
-        }
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
 
-        .btn-save:hover {
-            background: #218838;
-            transform: translateY(-1px);
-        }
+    .btn-save {
+      background: #28a745;
+      color: white;
+    }
 
-        .btn-delete {
-            background: #dc3545;
-            color: white;
-        }
+    .btn-save:hover {
+      background: #218838;
+      transform: translateY(-1px);
+    }
 
-        .btn-delete:hover {
-            background: #c82333;
-            transform: translateY(-1px);
-        }
+    .btn-delete {
+      background: #dc3545;
+      color: white;
+    }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+    .btn-delete:hover {
+      background: #c82333;
+      transform: translateY(-1px);
+    }
 
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-        }
+    .btn-back {
+      background: #0477dc;
+      color: white;
+    }
 
-        .form-input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-        }
+    .btn-back:hover {
+      background: #5a6268;
+      transform: translateY(-1px);
+    }
 
-        .form-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
+    .ai-note-btn {
+      width: 100%;
+      padding: 12px;
+      /* background: linear-gradient(135deg, #031882 0%, #3578e5 100%); */
+      background: linear-gradient(180deg, #082854, #0052d9, #082854);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 14px;
+      margin-bottom: 30px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-        .form-textarea {
-            width: 100%;
-            min-height: 300px;
-            padding: 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 16px;
-            font-family: inherit;
-            resize: vertical;
-            transition: border-color 0.3s ease;
-            line-height: 1.6;
-        }
+    .ai-note-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
 
-        .form-textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
+    .ai-chat-container {
+      display: none;
+      margin-top: -20px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border: 2px solid #e1e5e9;
+    }
 
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #666;
-        }
+    .ai-chat-messages {
+      max-height: 150px;
+      overflow-y: auto;
+      /* margin-top: -15px; */
+      margin-bottom: 10px;
+      padding: 10px;
+      background: white;
+      border-radius: 8px;
+    }
 
-        .empty-state h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
+    .ai-message {
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      line-height: 1.5;
+      font-size: 13px;
+    }
 
-        .empty-state p {
-            font-size: 1rem;
-            opacity: 0.8;
-        }
+    .ai-message.user {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      margin-left: 20%;
+      text-align: right;
+    }
 
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-        }
+    .ai-message.assistant {
+      background: #e9ecef;
+      color: #333;
+      margin-right: 20%;
+    }
 
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #f5c6cb;
-        }
+    .ai-message.system {
+      background: #fff3cd;
+      color: #856404;
+      text-align: center;
+      font-size: 13px;
+      font-style: italic;
+    }
 
-        .success {
-            background: #d4edda;
-            color: #155724;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #c3e6cb;
-        }
+    .ai-input-container {
+      display: flex;
+      gap: 10px;
+    }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
+    .ai-input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+      font-size: 12px;
+      min-height: 50px;
+      resize: vertical;
+      font-family: inherit;
+      line-height: 1.6;
+      transition: border-color 0.3s ease;
+    }
 
-            .header h1 {
-                font-size: 2rem;
-            }
+    .ai-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
 
-            .container {
-                padding: 15px;
-            }
+    .ai-send-btn {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #0052D9 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
 
-            .sidebar,
-            .note-editor {
-                padding: 20px;
-            }
-        }
+    .ai-send-btn:hover {
+      transform: translateY(-1px);
+    }
 
-        /* Custom Scrollbar */
-        .notes-list::-webkit-scrollbar {
-            width: 6px;
-        }
+    .ai-send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
 
-        .notes-list::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
+    .ai-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
 
-        .notes-list::-webkit-scrollbar-thumb {
-            background: #667eea;
-            border-radius: 3px;
-        }
+    .ai-action-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: 2px solid #667eea;
+      background: white;
+      color: #667eea;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
 
-        .notes-list::-webkit-scrollbar-thumb:hover {
-            background: #5a6fd8;
-        }
-    </style>
+    .ai-action-btn:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .ai-chat-messages::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .ai-chat-messages::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+
+    .ai-chat-messages::-webkit-scrollbar-thumb {
+      background: #667eea;
+      border-radius: 3px;
+    }
+
+    .streaming-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: #667eea;
+      margin-left: 2px;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      49% {
+        opacity: 1;
+      }
+
+      50%,
+      100% {
+        opacity: 0;
+      }
+    }
+
+    /* Markdown Preview Styles */
+    .markdown-preview {
+      display: none;
+      padding: 15px;
+      background: white;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      min-height: 300px;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .markdown-preview h1 {
+      font-size: 2em;
+      margin-bottom: 0.5em;
+      border-bottom: 2px solid #e1e5e9;
+      padding-bottom: 0.3em;
+    }
+
+    .markdown-preview h2 {
+      font-size: 1.5em;
+      margin-top: 1em;
+      margin-bottom: 0.5em;
+      border-bottom: 1px solid #e1e5e9;
+      padding-bottom: 0.3em;
+    }
+
+    .markdown-preview h3 {
+      font-size: 1.25em;
+      margin-top: 0.8em;
+      margin-bottom: 0.4em;
+    }
+
+    .markdown-preview p {
+      margin-bottom: 1em;
+    }
+
+    .markdown-preview ul,
+    .markdown-preview ol {
+      margin-left: 2em;
+      margin-bottom: 1em;
+    }
+
+    .markdown-preview li {
+      margin-bottom: 0.5em;
+    }
+
+    .markdown-preview code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+
+    .markdown-preview pre {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin-bottom: 1em;
+    }
+
+    .markdown-preview pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .markdown-preview blockquote {
+      border-left: 4px solid #667eea;
+      padding-left: 15px;
+      margin-left: 0;
+      margin-bottom: 1em;
+      color: #666;
+      font-style: italic;
+    }
+
+    .markdown-preview table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 1em;
+    }
+
+    .markdown-preview th,
+    .markdown-preview td {
+      border: 1px solid #e1e5e9;
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    .markdown-preview th {
+      background: #f8f9fa;
+      font-weight: 600;
+    }
+
+    .markdown-preview a {
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    .markdown-preview a:hover {
+      text-decoration: underline;
+    }
+
+    .markdown-preview img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 1em 0;
+    }
+
+    .markdown-toggle {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: 2px solid #e1e5e9;
+      background: white;
+      color: #666;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-btn.active {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .toggle-btn:hover {
+      border-color: #667eea;
+    }
+
+    .translate-section {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border: 2px solid #e1e5e9;
+    }
+
+    .translate-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .translate-title {
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .translate-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .language-select {
+      padding: 8px 12px;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+    }
+
+    .language-select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .translate-arrow {
+      color: #667eea;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .translate-btn {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #667eea 0%, #0052D9 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .translate-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .translate-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .translate-result {
+      margin-top: 10px;
+      padding: 12px;
+      background: white;
+      border-radius: 8px;
+      border: 2px solid #e1e5e9;
+      min-height: 60px;
+      max-height: 200px;
+      overflow-y: auto;
+      line-height: 1.6;
+      font-size: 14px;
+      display: none;
+    }
+
+    .translate-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .translate-action-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: 2px solid #667eea;
+      background: white;
+      color: #667eea;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .translate-action-btn:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .translate-result::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .translate-result::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+
+    .translate-result::-webkit-scrollbar-thumb {
+      background: #667eea;
+      border-radius: 3px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-textarea {
+      width: 100%;
+      min-height: 300px;
+      padding: 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+      font-family: inherit;
+      resize: vertical;
+      transition: border-color 0.3s ease;
+      line-height: 1.6;
+    }
+
+    .form-textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .empty-state p {
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 1px solid #f5c6cb;
+    }
+
+    .success {
+      background: #d4edda;
+      color: #155724;
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 1px solid #c3e6cb;
+    }
+
+    a,
+    a:link,
+    a:visited,
+    a:hover,
+    a:active,
+    a:focus {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* click the input box, the placeholder will disappear */
+    input::placeholder {
+      transition: color 0.2s ease;
+    }
+
+    input:focus::placeholder {
+      color: transparent;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .container {
+        padding: 15px;
+      }
+
+      .sidebar,
+      .note-editor {
+        padding: 20px;
+      }
+    }
+
+    /* Custom Scrollbar */
+    .notes-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .notes-list::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+
+    .notes-list::-webkit-scrollbar-thumb {
+      background: #667eea;
+      border-radius: 3px;
+    }
+
+    .notes-list::-webkit-scrollbar-thumb:hover {
+      background: #5a6fd8;
+    }
+  </style>
 </head>
 
 <body>
-<div class="container">
+  <div class="container">
     <div class="header">
-        <h1>📝 NoteTaker - nestorhuang</h1>
-        <p>Organize your thoughts, capture your ideas</p>
+      <h1>📝 NoteTaker - nestorhuang</h1>
+      <p style="font-family: 'Helvetica'; font-style: italic;">
+        Own your thoughts. Master your ideas.
+      </p>
     </div>
 
     <div class="main-content">
-        <div class="sidebar">
-            <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search notes...">
-            <button class="new-note-btn" id="newNoteBtn">✨ New Note</button>
-
-            <div class="notes-list" id="notesList">
-                <div class="loading">Loading notes...</div>
+      <div class="sidebar">
+        <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search notes...">
+        <button class="new-note-btn" id="newNoteBtn">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div>
+              <svg style=" margin-bottom:-2.4px;" t="1760580413868" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                xmlns="http://www.w3.org/2000/svg" p-id="7162" width="16" height="16">
+                <path
+                  d="M720 448a32 32 0 0 1 31.488 26.24l0.512 5.76v208H960a32 32 0 0 1 5.76 63.488l-5.76 0.512h-208V960a32 32 0 0 1-63.488 5.76L688 960v-208H480a32 32 0 0 1-5.76-63.488l5.76-0.512h208V480a32 32 0 0 1 32-32zM896 32a32 32 0 0 1 31.488 26.24L928 64v224a32 32 0 0 1-63.488 5.76L864 288v-192h-768v768h192a32 32 0 0 1 31.488 26.24L320 896a32 32 0 0 1-26.24 31.488l-5.76 0.512H64a32 32 0 0 1-31.488-26.24L32 896V64A32 32 0 0 1 58.24 32.512L64 32h832z"
+                  fill="#F8F9FA" p-id="7163"></path>
+              </svg>
             </div>
+            <div>
+              New Note
+            </div>
+          </div>
+        </button>
+
+        <div style="display: flex; align-items: center; margin-top: -5px;">
+          <div style="flex: 1; height: 1px; background-color: #ddd;"></div>
+          <span style="padding: 0 15px; color: #999; font-size: 14px;">Stuck for ideas? Try AI.</span>
+          <div style="flex: 1; height: 1px; background-color: #ddd;"></div>
         </div>
 
-        <div class="note-editor">
-            <div class="editor-header">
-                <h2 class="editor-title" id="editorTitle">Select a note to edit</h2>
-                <div class="editor-actions" id="editorActions" style="display: none;">
-                    <button class="btn btn-save" id="saveBtn">💾 Save</button>
-                    <button class="btn btn-delete" id="deleteBtn">🗑️ Delete</button>
-                </div>
-            </div>
+        <button class="ai-note-btn" id="aiNoteBtn">
+          <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+            <svg t="1760585782085" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+              p-id="2972" width="16" height="16">
+              <path
+                d="M425.459512 951.221073h-199.804878c-27.473171 0-52.44878-22.478049-52.44878-52.44878v-189.814634c-44.956098-7.492683-94.907317-24.97561-117.385366-62.439025-14.985366-24.97561-17.482927-52.44878-4.995122-79.921951 24.97561-52.44878 62.439024-92.409756 84.917073-114.887805 14.985366-77.42439 79.921951-384.62439 402.107317-384.62439 179.82439 0 324.682927 82.419512 389.619512 217.287805v2.497561c67.434146 144.858537 29.970732 322.185366-102.4 489.521951v124.878049c0 9.990244-9.990244 17.482927-19.980488 17.482926s-17.482927-9.990244-17.482926-19.980487v-129.873171c0-4.995122 2.497561-7.492683 4.995122-12.487805 127.37561-154.84878 164.839024-319.687805 102.4-452.058537v-2.49756c-57.443902-124.878049-189.814634-197.307317-357.15122-197.307318-74.926829 0-319.687805 24.97561-362.146341 362.146342 0 4.995122-2.497561 9.990244-7.492683 12.487805-17.482927 14.985366-57.443902 52.44878-82.419512 104.897561-7.492683 14.985366-7.492683 32.468293 2.49756 44.956097 14.985366 22.478049 52.44878 39.960976 107.395122 47.453659 9.990244 0 17.482927 9.990244 17.482927 17.482927v207.297561c0 7.492683 7.492683 14.985366 14.985366 14.985366h199.804878c9.990244 0 19.980488 7.492683 19.980488 19.980487s-12.487805 14.985366-22.478049 14.985366z"
+                fill="#ffffff" p-id="2973"></path>
+              <path
+                d="M343.04 731.435707l32.468293-87.414634h144.858536l32.468293 87.414634h39.960976l-124.878049-317.190244h-42.458537l-124.878049 317.190244h42.458537z m167.336585-119.882927h-122.380487l59.941463-157.346341h2.497561l59.941463 157.346341z m154.848781 119.882927v-317.190244h-34.965854v317.190244h34.965854z"
+                fill="#ffffff" p-id="2974"></path>
+            </svg>
+            <span>AI Create Note</span>
+          </div>
+        </button>
 
-            <div id="messageArea"></div>
-
-            <div id="editorForm" style="display: none;">
-                <div class="form-group">
-                    <label class="form-label" for="noteTitle">Title</label>
-                    <input type="text" class="form-input" id="noteTitle" placeholder="Enter note title...">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="noteContent">Content</label>
-                    <textarea class="form-textarea" id="noteContent"
-                              placeholder="Start writing your note..."></textarea>
-                </div>
-            </div>
-
-            <div class="empty-state" id="emptyState">
-                <h3>Welcome to NoteTaker!</h3>
-                <p>Select an existing note or create a new one to get started.</p>
-            </div>
+        <div class="ai-chat-container" id="aiChatContainer">
+          <div class="ai-chat-messages" id="aiChatMessages">
+            <div class="ai-message system">💡 Tell me what you want to note down, and I'll help you create it!</div>
+          </div>
+          <div class="ai-input-container">
+            <textarea class="ai-input" id="aiInput" rows="4"
+              placeholder="Describe your note idea...&#10;e.g., 'Create a meeting note for project planning...'"></textarea>
+            <button class="ai-send-btn" id="aiSendBtn">Send</button>
+          </div>
+          <div class="ai-actions">
+            <button class="ai-action-btn" id="aiApplyBtn" style="display: none;">✓ Apply to Note</button>
+            <button class="ai-action-btn" id="aiCancelBtn">✕ Cancel</button>
+          </div>
         </div>
+
+        <div class="notes-list" id="notesList">
+          <div class="loading">Loading notes...</div>
+        </div>
+      </div>
+
+      <div class="note-editor">
+        <div class="editor-header">
+          <h2 class="editor-title" id="editorTitle">Select a note to edit</h2>
+          <div class="editor-actions" id="editorActions" style="display: none;">
+            <button class="btn btn-back" id="backBtn" style="display: none;">◁ Back</button>
+            <button class="btn btn-save" id="saveBtn">💾 Save</button>
+            <button class="btn btn-delete" id="deleteBtn">🗑️ Delete</button>
+          </div>
+        </div>
+
+        <div id="messageArea"></div>
+
+        <div id="editorForm" style="display: none;">
+          <div class="form-group">
+            <label class="form-label" for="noteTitle">Title</label>
+            <input type="text" class="form-input" id="noteTitle" placeholder="Enter note title...">
+          </div>
+
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <label class="form-label" style="margin-bottom: 0;" for="noteContent">Content</label>
+              <div class="markdown-toggle">
+                <button class="toggle-btn active" id="editBtn" type="button">✏️ Edit</button>
+                <button class="toggle-btn" id="previewBtn" type="button">👁️ Preview</button>
+              </div>
+            </div>
+            <textarea class="form-textarea" id="noteContent" placeholder="Start writing your note..."></textarea>
+            <div class="markdown-preview" id="markdownPreview"></div>
+          </div>
+
+          <!-- AI Translation Section -->
+          <div class="translate-section" id="translateSection" style="display: none;">
+            <div class="translate-header">
+              <div class="translate-title">🌐 AI Translation</div>
+            </div>
+            <div class="translate-controls">
+              <select class="language-select" id="sourceLang">
+                <option value="auto">Auto Detect</option>
+                <option value="en">English</option>
+                <option value="zh">中文</option>
+                <option value="zh-TW">繁體中文</option>
+                <option value="ja">日本語</option>
+                <option value="ko">한국어</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="es">Español</option>
+                <option value="ru">Русский</option>
+                <option value="ar">العربية</option>
+              </select>
+              <span class="translate-arrow">→</span>
+              <select class="language-select" id="targetLang">
+                <option value="en">English</option>
+                <option value="zh" selected>中文</option>
+                <option value="zh-TW">繁體中文</option>
+                <option value="ja">日本語</option>
+                <option value="ko">한국어</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="es">Español</option>
+                <option value="ru">Русский</option>
+                <option value="ar">العربية</option>
+              </select>
+              <button class="translate-btn" id="translateBtn">🔄 Translate</button>
+            </div>
+            <div class="translate-result" id="translateResult"></div>
+            <div class="translate-actions" id="translateActions" style="display: none;">
+              <button class="translate-action-btn" id="replaceContentBtn">✓ Replace Content</button>
+              <button class="translate-action-btn" id="appendContentBtn">+ Append to Content</button>
+              <button class="translate-action-btn" id="copyTranslationBtn">📋 Copy Translation</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" id="emptyState">
+          <h3>Welcome to NoteTaker!</h3>
+          <p>Select an existing note or create a new one to get started.</p>
+        </div>
+      </div>
     </div>
-</div>
 
-<script>
+    <div class="page-bottom">
+      <p>Powered by <a href="https://github.com/stalwarthuang">Weicong HUANG</a> |
+        25041976g@connect.polyu.hk</p>
+    </div>
+  </div>
+
+  <script>
     class NoteTaker {
-        constructor() {
-            this.notes = [];
-            this.currentNote = null;
-            this.isLoading = false;
-            this.init();
-        }
+      constructor() {
+        this.notes = [];
+        this.currentNote = null;
+        this.isLoading = false;
+        this.aiGeneratedTitle = '';
+        this.aiGeneratedContent = '';
+        this.isAIMode = false;
+        this.conversationHistory = [];
+        this.AI_API_ENDPOINT = '/api/ai/chat';
+        this.hasUnsavedChanges = false;
+        this.lastSavedTitle = '';
+        this.lastSavedContent = '';
+        this.translatedText = '';
+        this.init();
+      }
 
-        async init() {
-            this.bindEvents();
-            await this.loadNotes();
-        }
+      async init() {
+        this.bindEvents();
+        await this.loadNotes();
+      }
 
-        bindEvents() {
-            document.getElementById('newNoteBtn').addEventListener('click', () => this.createNewNote());
-            document.getElementById('saveBtn').addEventListener('click', () => this.saveNote());
-            document.getElementById('deleteBtn').addEventListener('click', () => this.deleteNote());
-            document.getElementById('searchBox').addEventListener('input', (e) => this.searchNotes(e.target.value));
+      bindEvents() {
+        document.getElementById('newNoteBtn').addEventListener('click', () => this.createNewNote());
+        document.getElementById('saveBtn').addEventListener('click', () => this.saveNote());
+        document.getElementById('deleteBtn').addEventListener('click', () => this.deleteNote());
+        document.getElementById('backBtn').addEventListener('click', () => this.goBack());
+        document.getElementById('searchBox').addEventListener('input', (e) => this.searchNotes(e.target.value));
 
-            // Auto-save on content change (debounced)
-            let saveTimeout;
-            const autoSave = () => {
-                clearTimeout(saveTimeout);
-                saveTimeout = setTimeout(() => {
-                    if (this.currentNote && this.currentNote.id) {
-                        this.saveNote(true);
-                    }
-                }, 2000);
-            };
+        // AI related events
+        document.getElementById('aiNoteBtn').addEventListener('click', () => this.toggleAIChat());
+        document.getElementById('aiSendBtn').addEventListener('click', () => this.sendAIMessage());
+        document.getElementById('aiInput').addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') this.sendAIMessage();
+        });
+        document.getElementById('aiApplyBtn').addEventListener('click', () => this.applyAINote());
+        document.getElementById('aiCancelBtn').addEventListener('click', () => this.cancelAIChat());
 
-            document.getElementById('noteTitle').addEventListener('input', autoSave);
-            document.getElementById('noteContent').addEventListener('input', autoSave);
-        }
+        // Markdown preview toggle
+        document.getElementById('editBtn').addEventListener('click', () => this.toggleMarkdownMode('edit'));
+        document.getElementById('previewBtn').addEventListener('click', () => this.toggleMarkdownMode('preview'));
 
-        async loadNotes() {
-            this.isLoading = true;
-            this.showMessage('Loading notes...', 'loading');
+        // Track changes for unsaved warning
+        document.getElementById('noteTitle').addEventListener('input', () => this.trackChanges());
+        document.getElementById('noteContent').addEventListener('input', () => this.trackChanges());
 
-            try {
-                const response = await fetch('/api/notes');
-                if (!response.ok) throw new Error('Failed to load notes');
+        // Translation events
+        document.getElementById('translateBtn').addEventListener('click', () => this.translateContent());
+        document.getElementById('replaceContentBtn').addEventListener('click', () => this.replaceWithTranslation());
+        document.getElementById('appendContentBtn').addEventListener('click', () => this.appendTranslation());
+        document.getElementById('copyTranslationBtn').addEventListener('click', () => this.copyTranslation());
 
-                this.notes = await response.json();
-                this.renderNotesList();
-                this.hideMessage();
-            } catch (error) {
-                this.showMessage(`Error loading notes: ${error.message}`, 'error');
-            } finally {
-                this.isLoading = false;
+        // Auto-save on content change (debounced)
+        let saveTimeout;
+        const autoSave = () => {
+          clearTimeout(saveTimeout);
+          saveTimeout = setTimeout(() => {
+            if (this.currentNote && this.currentNote.id) {
+              this.saveNote(true);
             }
+          }, 2000);
+        };
+
+        document.getElementById('noteTitle').addEventListener('input', autoSave);
+        document.getElementById('noteContent').addEventListener('input', autoSave);
+      }
+
+      async loadNotes() {
+        this.isLoading = true;
+        this.showMessage('Loading notes...', 'loading');
+
+        try {
+          const response = await fetch('/api/notes');
+          if (!response.ok) throw new Error('Failed to load notes');
+
+          this.notes = await response.json();
+          this.renderNotesList();
+          this.hideMessage();
+        } catch (error) {
+          this.showMessage(`Error loading notes: ${error.message}`, 'error');
+        } finally {
+          this.isLoading = false;
+        }
+      }
+
+      renderNotesList() {
+        const notesList = document.getElementById('notesList');
+
+        if (this.notes.length === 0) {
+          notesList.innerHTML = '<div class="empty-state"><p>No notes yet. Create your first note!</p></div>';
+          return;
         }
 
-        renderNotesList() {
-            const notesList = document.getElementById('notesList');
-
-            if (this.notes.length === 0) {
-                notesList.innerHTML = '<div class="empty-state"><p>No notes yet. Create your first note!</p></div>';
-                return;
-            }
-
-            notesList.innerHTML = this.notes.map(note => `
+        notesList.innerHTML = this.notes.map(note => `
                     <div class="note-item ${this.currentNote && this.currentNote.id === note.id ? 'active' : ''}" 
                          data-note-id="${note.id}" onclick="noteTaker.selectNote(${note.id})">
                         <div class="note-title">${this.escapeHtml(note.title || 'Untitled')}</div>
@@ -444,152 +1062,224 @@
                         <div class="note-date">${this.formatDate(note.updated_at)}</div>
                     </div>
                 `).join('');
+      }
+
+      async selectNote(noteId) {
+        // Check for unsaved changes before switching
+        if (this.hasUnsavedChanges) {
+          const confirmSwitch = confirm('You have unsaved changes. Do you want to discard them?');
+          if (!confirmSwitch) {
+            return;
+          }
         }
 
-        async selectNote(noteId) {
-            const note = this.notes.find(n => n.id === noteId);
-            if (!note) return;
+        const note = this.notes.find(n => n.id === noteId);
+        if (!note) return;
 
-            this.currentNote = note;
-            this.showEditor();
-            this.renderNotesList(); // Re-render to update active state
+        this.currentNote = note;
+        this.showEditor(true);
+        this.renderNotesList();
 
-            document.getElementById('noteTitle').value = note.title || '';
-            document.getElementById('noteContent').value = note.content || '';
-            document.getElementById('editorTitle').textContent = note.title || 'Untitled Note';
+        document.getElementById('noteTitle').value = note.title || '';
+        document.getElementById('noteContent').value = note.content || '';
+        document.getElementById('editorTitle').textContent = note.title || 'Untitled Note';
+
+        // Store last saved state
+        this.lastSavedTitle = note.title || '';
+        this.lastSavedContent = note.content || '';
+        this.hasUnsavedChanges = false;
+
+        // Reset translation section
+        this.resetTranslationSection();
+
+        // Default to preview mode for existing notes
+        this.toggleMarkdownMode('preview');
+      }
+
+      createNewNote() {
+        // Check for unsaved changes before creating new note
+        if (this.hasUnsavedChanges) {
+          const confirmNew = confirm('You have unsaved changes. Do you want to discard them?');
+          if (!confirmNew) {
+            return;
+          }
         }
 
-        createNewNote() {
-            this.currentNote = {
-                id: null,
-                title: '',
-                content: '',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            };
+        this.currentNote = {
+          id: null,
+          title: '',
+          content: '',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
 
-            this.showEditor();
-            document.getElementById('noteTitle').value = '';
-            document.getElementById('noteContent').value = '';
-            document.getElementById('editorTitle').textContent = 'New Note';
-            document.getElementById('noteTitle').focus();
+        this.showEditor(false);
+        document.getElementById('noteTitle').value = '';
+        document.getElementById('noteContent').value = '';
+        document.getElementById('editorTitle').textContent = 'New Note';
+        document.getElementById('noteTitle').focus();
 
-            // Remove active state from all notes
-            document.querySelectorAll('.note-item').forEach(item => {
-                item.classList.remove('active');
+        // Store last saved state (empty for new note)
+        this.lastSavedTitle = '';
+        this.lastSavedContent = '';
+        this.hasUnsavedChanges = false;
+
+        // Reset translation section
+        this.resetTranslationSection();
+
+        // Reset to edit mode when creating new note
+        this.resetToEditMode();
+
+        // Remove active state from all notes
+        document.querySelectorAll('.note-item').forEach(item => {
+          item.classList.remove('active');
+        });
+      }
+
+      showEditor(showBackButton = false) {
+        document.getElementById('emptyState').style.display = 'none';
+        document.getElementById('editorForm').style.display = 'block';
+        document.getElementById('editorActions').style.display = 'flex';
+        document.getElementById('translateSection').style.display = 'block';
+
+        const backBtn = document.getElementById('backBtn');
+        if (showBackButton) {
+          backBtn.style.display = 'inline-block';
+        } else {
+          backBtn.style.display = 'none';
+        }
+      }
+
+      hideEditor() {
+        
+        document.getElementById('emptyState').style.display = 'block';
+        document.getElementById('editorForm').style.display = 'none';
+        document.getElementById('editorActions').style.display = 'none';
+        document.getElementById('translateSection').style.display = 'none';
+        document.getElementById('editorTitle').textContent = 'Select a note to edit';
+        document.getElementById('backBtn').style.display = 'none';
+        this.currentNote = null;
+      }
+
+      goBack() {
+        // Check for unsaved changes before going back
+        if (this.hasUnsavedChanges) {
+          const confirmBack = confirm('You have unsaved changes. Do you want to discard them?');
+          if (!confirmBack) {
+            return;
+          }
+        }
+        this.hideEditor();
+        this.hasUnsavedChanges = false;
+      }
+
+      async saveNote(isAutoSave = false) {
+        if (!this.currentNote) return;
+
+        const title = document.getElementById('noteTitle').value.trim();
+        const content = document.getElementById('noteContent').value.trim();
+
+        if (!title && !content) {
+          if (!isAutoSave) {
+            this.showMessage('Please enter a title or content', 'error');
+          }
+          return;
+        }
+
+        try {
+          const noteData = {
+            title: title || 'Untitled',
+            content: content
+          };
+
+          let response;
+          if (this.currentNote.id) {
+            // Update existing note
+            response = await fetch(`/api/notes/${this.currentNote.id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(noteData)
             });
+          } else {
+            // Create new note
+            response = await fetch('/api/notes', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(noteData)
+            });
+          }
+
+          if (!response.ok) throw new Error('Failed to save note');
+
+          const savedNote = await response.json();
+          this.currentNote = savedNote;
+
+          // Update notes list
+          const existingIndex = this.notes.findIndex(n => n.id === savedNote.id);
+          if (existingIndex >= 0) {
+            this.notes[existingIndex] = savedNote;
+          } else {
+            this.notes.unshift(savedNote);
+          }
+
+          this.renderNotesList();
+          document.getElementById('editorTitle').textContent = savedNote.title;
+
+          // Update last saved state and reset unsaved changes flag
+          this.lastSavedTitle = savedNote.title;
+          this.lastSavedContent = savedNote.content;
+          this.hasUnsavedChanges = false;
+
+          if (!isAutoSave) {
+            this.showMessage('Note saved successfully!', 'success');
+          }
+        } catch (error) {
+          this.showMessage(`Error saving note: ${error.message}`, 'error');
+        }
+      }
+
+      async deleteNote() {
+        if (!this.currentNote) return;
+
+        // if user create a new note and not save yet, confirm to discard and route to front page
+        if (!this.currentNote.id) {
+          if (!confirm('Are you sure you want to discard this new note?')) return;
+          this.hideEditor();
+          return;
         }
 
-        showEditor() {
-            document.getElementById('emptyState').style.display = 'none';
-            document.getElementById('editorForm').style.display = 'block';
-            document.getElementById('editorActions').style.display = 'flex';
+        try {
+          const response = await fetch(`/api/notes/${this.currentNote.id}`, {
+            method: 'DELETE'
+          });
+
+          if (!response.ok) throw new Error('Failed to delete note');
+
+          // Remove from notes array
+          this.notes = this.notes.filter(n => n.id !== this.currentNote.id);
+          this.renderNotesList();
+          this.hideEditor();
+          this.hasUnsavedChanges = false;
+          this.showMessage('Note deleted successfully!', 'success');
+        } catch (error) {
+          this.showMessage(`Error deleting note: ${error.message}`, 'error');
+        }
+      }
+
+      searchNotes(query) {
+        const filteredNotes = query.trim() === '' ? this.notes :
+          this.notes.filter(note =>
+            (note.title && note.title.toLowerCase().includes(query.toLowerCase())) ||
+            (note.content && note.content.toLowerCase().includes(query.toLowerCase()))
+          );
+
+        const notesList = document.getElementById('notesList');
+        if (filteredNotes.length === 0) {
+          notesList.innerHTML = '<div class="empty-state"><p>No notes found matching your search.</p></div>';
+          return;
         }
 
-        hideEditor() {
-            document.getElementById('emptyState').style.display = 'block';
-            document.getElementById('editorForm').style.display = 'none';
-            document.getElementById('editorActions').style.display = 'none';
-            document.getElementById('editorTitle').textContent = 'Select a note to edit';
-            this.currentNote = null;
-        }
-
-        async saveNote(isAutoSave = false) {
-            if (!this.currentNote) return;
-
-            const title = document.getElementById('noteTitle').value.trim();
-            const content = document.getElementById('noteContent').value.trim();
-
-            if (!title && !content) {
-                if (!isAutoSave) {
-                    this.showMessage('Please enter a title or content', 'error');
-                }
-                return;
-            }
-
-            try {
-                const noteData = {
-                    title: title || 'Untitled',
-                    content: content
-                };
-
-                let response;
-                if (this.currentNote.id) {
-                    // Update existing note
-                    response = await fetch(`/api/notes/${this.currentNote.id}`, {
-                        method: 'PUT',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(noteData)
-                    });
-                } else {
-                    // Create new note
-                    response = await fetch('/api/notes', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(noteData)
-                    });
-                }
-
-                if (!response.ok) throw new Error('Failed to save note');
-
-                const savedNote = await response.json();
-                this.currentNote = savedNote;
-
-                // Update notes list
-                const existingIndex = this.notes.findIndex(n => n.id === savedNote.id);
-                if (existingIndex >= 0) {
-                    this.notes[existingIndex] = savedNote;
-                } else {
-                    this.notes.unshift(savedNote);
-                }
-
-                this.renderNotesList();
-                document.getElementById('editorTitle').textContent = savedNote.title;
-
-                if (!isAutoSave) {
-                    this.showMessage('Note saved successfully!', 'success');
-                }
-            } catch (error) {
-                this.showMessage(`Error saving note: ${error.message}`, 'error');
-            }
-        }
-
-        async deleteNote() {
-            if (!this.currentNote || !this.currentNote.id) return;
-
-            if (!confirm('Are you sure you want to delete this note?')) return;
-
-            try {
-                const response = await fetch(`/api/notes/${this.currentNote.id}`, {
-                    method: 'DELETE'
-                });
-
-                if (!response.ok) throw new Error('Failed to delete note');
-
-                // Remove from notes array
-                this.notes = this.notes.filter(n => n.id !== this.currentNote.id);
-                this.renderNotesList();
-                this.hideEditor();
-                this.showMessage('Note deleted successfully!', 'success');
-            } catch (error) {
-                this.showMessage(`Error deleting note: ${error.message}`, 'error');
-            }
-        }
-
-        searchNotes(query) {
-            const filteredNotes = query.trim() === '' ? this.notes :
-                this.notes.filter(note =>
-                    (note.title && note.title.toLowerCase().includes(query.toLowerCase())) ||
-                    (note.content && note.content.toLowerCase().includes(query.toLowerCase()))
-                );
-
-            const notesList = document.getElementById('notesList');
-            if (filteredNotes.length === 0) {
-                notesList.innerHTML = '<div class="empty-state"><p>No notes found matching your search.</p></div>';
-                return;
-            }
-
-            notesList.innerHTML = filteredNotes.map(note => `
+        notesList.innerHTML = filteredNotes.map(note => `
                     <div class="note-item ${this.currentNote && this.currentNote.id === note.id ? 'active' : ''}" 
                          data-note-id="${note.id}" onclick="noteTaker.selectNote(${note.id})">
                         <div class="note-title">${this.escapeHtml(note.title || 'Untitled')}</div>
@@ -597,48 +1287,632 @@
                         <div class="note-date">${this.formatDate(note.updated_at)}</div>
                     </div>
                 `).join('');
+      }
+
+      showMessage(message, type) {
+        const messageArea = document.getElementById('messageArea');
+        messageArea.innerHTML = `<div class="${type}">${message}</div>`;
+
+        if (type === 'success') {
+          setTimeout(() => this.hideMessage(), 1500);
         }
+      }
 
-        showMessage(message, type) {
-            const messageArea = document.getElementById('messageArea');
-            messageArea.innerHTML = `<div class="${type}">${message}</div>`;
+      hideMessage() {
+        document.getElementById('messageArea').innerHTML = '';
+      }
 
-            if (type === 'success') {
-                setTimeout(() => this.hideMessage(), 3000);
+      escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      formatDate(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffTime = Math.abs(now - date);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 1) {
+          return 'Today';
+        } else if (diffDays === 2) {
+          return 'Yesterday';
+        } else if (diffDays <= 7) {
+          return `${diffDays - 1} days ago`;
+        } else {
+          return date.toLocaleDateString();
+        }
+      }
+
+      // Track changes to detect unsaved modifications
+      trackChanges() {
+        const currentTitle = document.getElementById('noteTitle').value;
+        const currentContent = document.getElementById('noteContent').value;
+
+        // Check if content has changed from last saved state
+        this.hasUnsavedChanges =
+          currentTitle !== this.lastSavedTitle ||
+          currentContent !== this.lastSavedContent;
+      }
+
+      // AI Chat Methods
+      toggleAIChat() {
+        const chatContainer = document.getElementById('aiChatContainer');
+        const isVisible = chatContainer.style.display === 'block';
+
+        if (isVisible) {
+          chatContainer.style.display = 'none';
+        } else {
+          chatContainer.style.display = 'block';
+          document.getElementById('aiInput').focus();
+        }
+      }
+
+      async sendAIMessage() {
+        const input = document.getElementById('aiInput');
+        const message = input.value.trim();
+
+        if (!message) return;
+
+        // Add user message to chat
+        this.addAIMessage(message, 'user');
+        input.value = '';
+
+        // Disable send button during processing
+        const sendBtn = document.getElementById('aiSendBtn');
+        sendBtn.disabled = true;
+        sendBtn.textContent = 'Thinking...';
+
+        try {
+          // Add conversation to history
+          this.conversationHistory.push({
+            role: 'user',
+            content: message
+          });
+
+          // Call AI API with streaming
+          await this.streamAIResponse(message);
+
+          // Show apply button after first successful response
+          document.getElementById('aiApplyBtn').style.display = 'block';
+
+        } catch (error) {
+          this.addAIMessage(`Error: ${error.message}`, 'system');
+        } finally {
+          sendBtn.disabled = false;
+          sendBtn.textContent = 'Send';
+        }
+      }
+
+      async streamAIResponse(userMessage) {
+        const messagesContainer = document.getElementById('aiChatMessages');
+
+        // Create assistant message container
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'ai-message assistant';
+        messageDiv.innerHTML = '<span class="streaming-cursor"></span>';
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        let fullResponse = '';
+        const cursor = messageDiv.querySelector('.streaming-cursor');
+
+        try {
+          // Prepare the system prompt
+          const systemPrompt = this.conversationHistory.length === 1
+            ? `You are a helpful note-taking assistant. The user will describe what they want to note down.
+Create a well-structured note with a clear title and detailed content.
+
+IMPORTANT: Respond ONLY with a valid JSON object in this exact format:
+{"title": "Your Title Here", "content": "Your content here"}
+
+Rules:
+1. The response must be ONLY the JSON object, nothing else
+2. Do NOT wrap it in markdown code blocks
+3. Do NOT add any explanatory text before or after the JSON
+4. Use double quotes for strings
+5. Escape special characters properly in the content
+
+Example response:
+{"title": "Meeting Notes", "content": "Discussed project timeline and next steps"}`
+            : `Continue helping the user refine their note. 
+
+IMPORTANT: Respond ONLY with a valid JSON object in this exact format:
+{"title": "Updated Title", "content": "Updated content"}
+
+Rules:
+1. The response must be ONLY the JSON object, nothing else
+2. Do NOT wrap it in markdown code blocks
+3. Use double quotes for strings
+4. Escape special characters properly`;
+
+          // Call backend proxy endpoint (API key is secure on server)
+          const response = await fetch(this.AI_API_ENDPOINT, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              messages: [
+                { role: 'system', content: systemPrompt },
+                ...this.conversationHistory
+              ]
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error('AI API request failed');
+          }
+
+          // Handle streaming response
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n');
+
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const data = line.slice(6);
+                if (data === '[DONE]') continue;
+
+                try {
+                  const parsed = JSON.parse(data);
+                  const content = parsed.choices?.[0]?.delta?.content || '';
+
+                  if (content) {
+                    fullResponse += content;
+                    messageDiv.textContent = fullResponse;
+                    messageDiv.appendChild(cursor);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                  }
+                } catch (e) {
+                  // Skip invalid JSON
+                }
+              }
             }
+          }
+
+          // Remove cursor after streaming is done
+          cursor.remove();
+
+          // Parse AI response to extract title and content
+          this.parseAIResponse(fullResponse);
+
+          // Add to conversation history
+          this.conversationHistory.push({
+            role: 'assistant',
+            content: fullResponse
+          });
+
+        } catch (error) {
+          cursor.remove();
+          messageDiv.textContent = 'Error connecting to AI. Please try again.';
+          throw error;
+        }
+      }
+
+      addAIMessage(message, type) {
+        const messagesContainer = document.getElementById('aiChatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `ai-message ${type}`;
+        messageDiv.textContent = message;
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+
+      applyAINote() {
+        if (!this.aiGeneratedTitle && !this.aiGeneratedContent) {
+          this.showMessage('No AI-generated content to apply', 'error');
+          return;
         }
 
-        hideMessage() {
-            document.getElementById('messageArea').innerHTML = '';
+        // Check for unsaved changes before applying AI note
+        if (this.hasUnsavedChanges) {
+          const confirmApply = confirm('You have unsaved changes. Do you want to discard them and apply AI content?');
+          if (!confirmApply) {
+            return;
+          }
         }
 
-        escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        // Create a new note with AI-generated content
+        this.currentNote = {
+          id: null,
+          title: this.aiGeneratedTitle,
+          content: this.aiGeneratedContent,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+
+        // Show editor and populate fields
+        this.showEditor(false);
+        document.getElementById('noteTitle').value = this.aiGeneratedTitle;
+        document.getElementById('noteContent').value = this.aiGeneratedContent;
+        document.getElementById('editorTitle').textContent = this.aiGeneratedTitle || 'New Note';
+
+        // Store last saved state (empty since it's new)
+        this.lastSavedTitle = '';
+        this.lastSavedContent = '';
+        this.hasUnsavedChanges = true; // Mark as unsaved since AI content is not saved yet
+
+        // Reset to edit mode
+        this.resetToEditMode();
+
+        // Close AI chat
+        this.cancelAIChat();
+
+        // Show success message
+        this.showMessage('AI-generated note applied! You can edit or save it now.', 'success');
+
+        // Remove active state from all notes
+        document.querySelectorAll('.note-item').forEach(item => {
+          item.classList.remove('active');
+        });
+      }
+
+      cancelAIChat() {
+        // Hide chat container
+        document.getElementById('aiChatContainer').style.display = 'none';
+
+        // Reset chat
+        const messagesContainer = document.getElementById('aiChatMessages');
+        messagesContainer.innerHTML = '<div class="ai-message system">💡 Tell me what you want to note down, and I\'ll help you create it!</div>';
+
+        // Clear input
+        document.getElementById('aiInput').value = '';
+
+        // Hide apply button
+        document.getElementById('aiApplyBtn').style.display = 'none';
+
+        // Reset conversation history and generated content
+        this.conversationHistory = [];
+        this.aiGeneratedTitle = '';
+        this.aiGeneratedContent = '';
+      }
+
+      // Parse AI response to extract title and content
+      parseAIResponse(response) {
+        console.log('Raw response:', response);
+
+        // Method 1: Try direct JSON parse
+        try {
+          const parsed = JSON.parse(response);
+          if (parsed.title && parsed.content) {
+            this.aiGeneratedTitle = parsed.title;
+            this.aiGeneratedContent = parsed.content;
+            console.log('✅ Parsed as direct JSON');
+            return;
+          }
+        } catch (e) {
+          console.log('❌ Direct JSON parse failed:', e.message);
         }
 
-        formatDate(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diffTime = Math.abs(now - date);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-            if (diffDays === 1) {
-                return 'Today';
-            } else if (diffDays === 2) {
-                return 'Yesterday';
-            } else if (diffDays <= 7) {
-                return `${diffDays - 1} days ago`;
-            } else {
-                return date.toLocaleDateString();
+        // Method 2: Try to extract JSON from markdown code block
+        try {
+          const jsonMatch = response.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+          if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[1]);
+            if (parsed.title && parsed.content) {
+              this.aiGeneratedTitle = parsed.title;
+              this.aiGeneratedContent = parsed.content;
+              console.log('✅ Parsed from markdown code block');
+              return;
             }
+          }
+        } catch (e) {
+          console.log('❌ Markdown block parse failed:', e.message);
         }
+
+        // Method 3: Try to find JSON object in text
+        try {
+          const jsonObjMatch = response.match(/\{[^{}]*"title"[^{}]*"content"[^{}]*\}/);
+          if (jsonObjMatch) {
+            const parsed = JSON.parse(jsonObjMatch[0]);
+            if (parsed.title && parsed.content) {
+              this.aiGeneratedTitle = parsed.title;
+              this.aiGeneratedContent = parsed.content;
+              console.log('✅ Parsed from embedded JSON');
+              return;
+            }
+          }
+        } catch (e) {
+          console.log('❌ Embedded JSON parse failed:', e.message);
+        }
+
+        // Method 4: Try to extract using regex patterns
+        try {
+          const titleMatch = response.match(/"title"\s*:\s*"([^"]*)"/);
+          const contentMatch = response.match(/"content"\s*:\s*"([^"]*)"/);
+
+          if (titleMatch && contentMatch) {
+            this.aiGeneratedTitle = titleMatch[1];
+            this.aiGeneratedContent = contentMatch[1];
+            console.log('✅ Parsed using regex');
+            return;
+          }
+        } catch (e) {
+          console.log('❌ Regex parse failed:', e.message);
+        }
+
+        // Method 5: Smart extraction from markdown format
+        const lines = response.split('\n').map(line => line.trim()).filter(line => line);
+
+        // Look for markdown title (# Title or ## Title)
+        let title = 'AI Generated Note';
+        let contentStartIndex = 0;
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if (line.startsWith('# ') && line.length > 2) {
+            title = line.substring(2).trim();
+            contentStartIndex = i + 1;
+            break;
+          } else if (line.startsWith('## ') && line.length > 3) {
+            title = line.substring(3).trim();
+            contentStartIndex = i + 1;
+            break;
+          }
+        }
+
+        // Get content (everything after title)
+        const content = lines.slice(contentStartIndex).join('\n');
+
+        if (content) {
+          this.aiGeneratedTitle = title;
+          this.aiGeneratedContent = content;
+          console.log('✅ Parsed as markdown');
+          return;
+        }
+
+        // Method 6: Fallback - use entire response as content
+        console.log('⚠️ Using fallback - entire response as content');
+        this.aiGeneratedTitle = 'AI Generated Note';
+        this.aiGeneratedContent = response;
+      }
+
+      // Markdown Preview Methods
+      toggleMarkdownMode(mode) {
+        const editBtn = document.getElementById('editBtn');
+        const previewBtn = document.getElementById('previewBtn');
+        const textarea = document.getElementById('noteContent');
+        const preview = document.getElementById('markdownPreview');
+
+        if (mode === 'edit') {
+          editBtn.classList.add('active');
+          previewBtn.classList.remove('active');
+          textarea.style.display = 'block';
+          preview.style.display = 'none';
+        } else {
+          editBtn.classList.remove('active');
+          previewBtn.classList.add('active');
+          textarea.style.display = 'none';
+          preview.style.display = 'block';
+
+          // Render Markdown
+          this.renderMarkdown();
+        }
+      }
+
+      renderMarkdown() {
+        const content = document.getElementById('noteContent').value;
+        const preview = document.getElementById('markdownPreview');
+
+        if (typeof marked !== 'undefined') {
+          // Configure marked options
+          marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: true,
+            mangle: false
+          });
+
+          // Render markdown to HTML
+          preview.innerHTML = marked.parse(content);
+        } else {
+          // Fallback if marked.js is not loaded
+          preview.innerHTML = `<p>${content.replace(/\n/g, '<br>')}</p>`;
+        }
+      }
+
+      // Reset to edit mode (helper method)
+      resetToEditMode() {
+        const editBtn = document.getElementById('editBtn');
+        const previewBtn = document.getElementById('previewBtn');
+        const textarea = document.getElementById('noteContent');
+        const preview = document.getElementById('markdownPreview');
+
+        editBtn.classList.add('active');
+        previewBtn.classList.remove('active');
+        textarea.style.display = 'block';
+        preview.style.display = 'none';
+      }
+
+      // Translation Methods
+      async translateContent() {
+        const content = document.getElementById('noteContent').value.trim();
+
+        if (!content) {
+          this.showMessage('Please enter some content to translate', 'error');
+          return;
+        }
+
+        const sourceLang = document.getElementById('sourceLang').value;
+        const targetLang = document.getElementById('targetLang').value;
+        const translateBtn = document.getElementById('translateBtn');
+        const translateResult = document.getElementById('translateResult');
+
+        // Disable button during translation
+        translateBtn.disabled = true;
+        translateBtn.textContent = '🔄 Translating...';
+        translateResult.style.display = 'block';
+        translateResult.textContent = 'Translating...';
+
+        try {
+          // Prepare translation prompt
+          const systemPrompt = `You are a professional translator. Translate the following text ${sourceLang === 'auto' ? '' : `from ${this.getLanguageName(sourceLang)} `}to ${this.getLanguageName(targetLang)}.
+            Rules:
+            1. Only provide the translated text, nothing else
+            2. Preserve the original formatting (line breaks, bullet points, etc.)
+            3. Maintain the same tone and style
+            4. Do NOT add explanations or notes
+            5. If it's already in the target language, provide a refined version`;
+          const response = await fetch(this.AI_API_ENDPOINT, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: content }
+              ]
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error('Translation API request failed');
+          }
+
+          // Handle streaming response
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let translatedText = '';
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n');
+
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const data = line.slice(6);
+                if (data === '[DONE]') continue;
+
+                try {
+                  const parsed = JSON.parse(data);
+                  const content = parsed.choices?.[0]?.delta?.content || '';
+
+                  if (content) {
+                    translatedText += content;
+                    translateResult.textContent = translatedText;
+                  }
+                } catch (e) {
+                  // Skip invalid JSON
+                }
+              }
+            }
+          }
+
+          // Store translation and show action buttons
+          this.translatedText = translatedText;
+          document.getElementById('translateActions').style.display = 'flex';
+
+        } catch (error) {
+          translateResult.textContent = `Error: ${error.message}`;
+          console.error('Translation error:', error);
+        } finally {
+          translateBtn.disabled = false;
+          translateBtn.textContent = '🔄 Translate';
+        }
+      }
+
+      getLanguageName(code) {
+        const languageMap = {
+          'auto': 'Auto',
+          'en': 'English',
+          'zh': 'Simplified Chinese',
+          'zh-TW': 'Traditional Chinese',
+          'ja': 'Japanese',
+          'ko': 'Korean',
+          'fr': 'French',
+          'de': 'German',
+          'es': 'Spanish',
+          'ru': 'Russian',
+          'ar': 'Arabic'
+        };
+        return languageMap[code] || code;
+      }
+
+      replaceWithTranslation() {
+        if (!this.translatedText) return;
+
+        const textarea = document.getElementById('noteContent');
+        textarea.value = this.translatedText;
+        this.trackChanges();
+
+        // Switch to edit mode after replacing
+        this.resetToEditMode();
+
+        this.showMessage('Content replaced with translation', 'success');
+      }
+
+      appendTranslation() {
+        if (!this.translatedText) return;
+
+        const textarea = document.getElementById('noteContent');
+        const currentContent = textarea.value.trim();
+
+        if (currentContent) {
+          textarea.value = currentContent + '\n\n---\n\n' + this.translatedText;
+        } else {
+          textarea.value = this.translatedText;
+        }
+
+        this.trackChanges();
+
+        // Switch to edit mode after appending
+        this.resetToEditMode();
+
+        this.showMessage('Translation appended to content', 'success');
+      }
+
+      async copyTranslation() {
+        if (!this.translatedText) return;
+
+        try {
+          await navigator.clipboard.writeText(this.translatedText);
+          this.showMessage('Translation copied to clipboard', 'success');
+        } catch (error) {
+          // Fallback for older browsers
+          const textarea = document.createElement('textarea');
+          textarea.value = this.translatedText;
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+          this.showMessage('Translation copied to clipboard', 'success');
+        }
+      }
+
+      // Reset translation section to initial state
+      resetTranslationSection() {
+        // Clear translated text
+        this.translatedText = '';
+
+        // Hide translation result and actions
+        const translateResult = document.getElementById('translateResult');
+        const translateActions = document.getElementById('translateActions');
+
+        translateResult.style.display = 'none';
+        translateResult.textContent = '';
+        translateActions.style.display = 'none';
+
+        // Reset language selections to default
+        document.getElementById('sourceLang').value = 'auto';
+        document.getElementById('targetLang').value = 'zh';
+      }
     }
 
     // Initialize the app
     const noteTaker = new NoteTaker();
-</script>
+  </script>
 </body>
 
 </html>
