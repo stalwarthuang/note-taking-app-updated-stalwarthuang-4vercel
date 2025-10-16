@@ -10,6 +10,10 @@ A modern, responsive web application for managing personal notes with a beautifu
 - **Delete Notes**: Remove notes you no longer need
 - **Search Notes**: Find notes quickly by searching titles and content
 - **Auto-save**: Notes are automatically saved as you type
+- **AI Note Creation**: Generate notes from ideas using AI assistance
+- **AI Translation**: Translate note content between multiple languages
+- **Markdown Preview**: View notes with rich Markdown formatting
+- **Unsaved Changes Warning**: Prevent accidental data loss
 - **Responsive Design**: Works perfectly on desktop and mobile devices
 - **Modern UI**: Beautiful gradient design with smooth animations
 - **Real-time Updates**: Instant feedback and updates
@@ -97,6 +101,10 @@ notetaking-app/
 - `PUT /api/notes/<id>` - Update a note
 - `DELETE /api/notes/<id>` - Delete a note
 - `GET /api/notes/search?q=<query>` - Search notes
+
+### AI API
+- `POST /api/ai/chat` - AI chat completion (streaming)
+- `GET /api/ai/config` - Get AI configuration status
 
 ### Request/Response Format
 ```json
