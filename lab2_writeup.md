@@ -1,15 +1,37 @@
-# Weicong HUANG lab2 writeup
+# Lab2 writeup
+
+> Weicong HUANG <br> 25041976g
 
 ## Overall Steps
 1. Sign up a Vercel account
 2. Change the Github visibility to public(Because If it's private, a fee will be charged.)
 3. Add a new project and import from Github
-4. Set some properties:
+4. Set some properties in dashboard:
    1. Framework
    2. root dir
    3. build and install command
-   4. Environment Variables
+
+      <img src="md_pictures/build_cmd.png" width="300">
+   4. Environment Variables(API_KEYS, PGSQL_URL...)
+
+      <img src="md_pictures/env.png" width="300">
 5. Click the Deploy button
+
+   <img src="md_pictures/Vercel.png" width="300">
+
+6. Subsequent steps:
+
+   Update code on the development branch. After submitting a pull request and merging it into the main branch, hot deployment will occur automatically.
+   <img src="md_pictures/github_vercel.png" width="300">
+   
+
+## Showcase
+1. Optimized UI and core features
+2. Supports AI-generated notes and translation
+
+<img src="md_pictures/image.png" width="400">
+
+<img src="md_pictures/image_1.png" width="400">
 
 ## Pit
 Because the database used in this project is sqlite, so after deploying there are some bugs.
