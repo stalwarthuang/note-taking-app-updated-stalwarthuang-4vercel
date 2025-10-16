@@ -10,6 +10,7 @@ from flask_cors import CORS
 from src.models.user import db
 from src.routes.user import user_bp
 from src.routes.note import note_bp
+from src.routes.ai import ai_bp
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), "static"))
 app.config["SECRET_KEY"] = "asdf#FGSgvasgf$5$WGT"
@@ -20,6 +21,7 @@ CORS(app)
 # register blueprints
 app.register_blueprint(user_bp, url_prefix="/api")
 app.register_blueprint(note_bp, url_prefix="/api")
+app.register_blueprint(ai_bp, url_prefix="/api")
 
 # Database configuration - support both PostgreSQL (production) and SQLite (development)
 DATABASE_URL = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")

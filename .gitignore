@@ -89,6 +89,11 @@ celerybeat-schedule
 .env
 .env.*
 
+# Configuration files with sensitive data
+config.py
+AI_SETUP.md
+DEPLOYMENT.md
+
 # mypy
 .mypy_cache/
 
